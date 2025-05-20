@@ -1,48 +1,49 @@
 package pbo.model;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.util.*;
 
 @Entity
-@Table(name = "course")
 public class Course {
-
     @Id
-    private String courseCode;           
-    private String courseName;           
-    private String semester;       
-    private int credits;      
+    private String code;
 
-    public String getCourseCode() {
-        return courseCode;
-    }
+    private String name;
+    private int semester;
+    private int credit;
 
-    public void setCourseCode(String courseCode) {
-        this.courseCode = courseCode;
-    }
+    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL)
+    private List<Enrollment> enrollments = new ArrayList<>();
 
-    public String getCourseName() {
-        return courseName;
-    }
+    public Course() {}
 
-    public void setCourseName(String courseName) {
-        this.courseName = courseName;
-    }
-
-    public String getSemester() {
-        return semester;
-    }
-
-    public void setSemester(String semester) {
+    public Course(String code, String name, int semester, int credit) {
+        this.code = code;
+        this.name = name;
         this.semester = semester;
+        this.credit = credit;
     }
 
-    public int getCredits() {
-        return credits;
+    public String getCode() { return code; }
+    public String getName() { return name; }
+    public int getSemester() { return semester; }
+    public int getCredit() { return credit; }
+
+    @Override
+    public String toString() {
+        return code + "|" + name + "|" + semester + "|" + credit;
     }
 
-    public void setCredits(int credits) {
-        this.credits = credits;
+    public static void addCourse(EntityManager em, String code, String name, int semester, int credit) {
+        em.getTransaction().begin();
+        if (em.find(Course.class, code) == null) {
+            em.persist(new Course(code, name, semester, credit));
+        }
+        em.getTransaction().commit();
+    }
+
+    public static void showAllCourses(EntityManager em) {
+        List<Course> courses = em.createQuery("SELECT c FROM Course c ORDER BY c.semester, c.code", Course.class).getResultList();
+        for (Course c : courses) System.out.println(c);
     }
 }
