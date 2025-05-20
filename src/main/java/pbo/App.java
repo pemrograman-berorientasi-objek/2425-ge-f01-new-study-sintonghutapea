@@ -18,7 +18,7 @@ public class App {
 
         while (true) {
             String input = scanner.nextLine();
-
+            
             if (input.startsWith("student-add")) {
                 String[] parts = input.split("#");
                 if (parts.length == 4) {
@@ -133,7 +133,7 @@ public class App {
         EntityManagerFactory emf = Persistence.createEntityManagerFactory("KrsPU");
         EntityManager em = emf.createEntityManager();
 
-        String queryStr = "SELECT m FROM MataKuliah m ORDER BY m.semester ASC, m.kode ASC";
+        String queryStr = "SELECT c FROM Course c ORDER BY c.semester ASC, c.courseCode ASC";
         TypedQuery<Course> query = em.createQuery(queryStr, Course.class);
 
         try {
